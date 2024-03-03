@@ -11,7 +11,7 @@ class AuthLoading extends AuthState {}
 
 
 class Authenticated extends AuthState {
-  User? user;
+  final User? user;
 
   Authenticated(
     this.user,
@@ -28,4 +28,19 @@ class AuthenticatedError extends AuthState {
   AuthenticatedError({
     required this.message,
   });
+}
+
+class UserDetailsState extends AuthState {}
+
+class FetchingUserDetails extends UserDetailsState {}
+
+class UserDetailsError extends UserDetailsState {
+  final String errorMessage;
+
+  UserDetailsError(this.errorMessage);
+}
+class UserDetailsLoaded extends AuthState {
+  final UserModel user;
+
+  UserDetailsLoaded(this.user);
 }

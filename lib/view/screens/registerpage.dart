@@ -128,7 +128,6 @@ class RegisterPage extends StatelessWidget {
                           CustomTextField(
                             validator: (value) {
                               final agee = RegExp(r"^[0-9]{1,2}$");
-
                               if (value!.isEmpty) {
                                 return 'Age can\'t be empty';
                               } else if (value.length > 2) {

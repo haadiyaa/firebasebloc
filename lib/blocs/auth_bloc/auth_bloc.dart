@@ -55,25 +55,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthenticatedError(message: e.toString()));
       }
     });
-    
-    on<LoginEvent>((event, emit) async{
+
+    on<LoginEvent>((event, emit) async {
       emit(AuthLoading());
 
       try {
-        final userCredential=await _auth.signInWithEmailAndPassword(email: event.email, password: event.password);
+        final userCredential = await _auth.signInWithEmailAndPassword(
+            email: event.email, password: event.password);
 
-        final user=userCredential.user;
+        final user = userCredential.user;
 
-        if (user!=null) {
+        if (user != null) {
           emit(Authenticated(user));
-        }else{
+        } else {
           emit(UnAuthenticated());
         }
       } catch (e) {
         emit(AuthenticatedError(message: e.toString()));
       }
     });
-    
+
     on<LogOutEvent>((event, emit) async {
       try {
         await _auth.signOut();
@@ -82,5 +83,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthenticatedError(message: e.toString()));
       }
     });
+on<FetchUserDetailsEvent>((event, emit) async {
+  emit(FetchingUserDetails());
+
+  try {
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(event.uid).get();
+    final user = UserModel.fromJson(userDoc.data()!);
+    emit(UserDetailsLoaded(user));
+  } catch (e) {
+    emit(UserDetailsError(e.toString()));
+  }
+});
+
+    // on<FetchUserDetailsEvent>((event, emit) async {
+    //   emit(FetchingUserDetails());
+
+    //   try {
+    //     final userDoc = await FirebaseFirestore.instance
+    //         .collection('users')
+    //         .doc(event.uid)
+    //         .get();
+    //     final user = UserModel.fromJson(userDoc.data()!);
+    //     emit(UserDetailsLoaded(user));
+    //   } catch (e) {
+    //     emit(UserDetailsError(e.toString()));
+    //   }
+    // });
   }
 }
