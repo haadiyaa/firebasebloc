@@ -11,4 +11,7 @@ class UploadPictureEvent extends PictureEvent {
   });
 }
 
-class SelectPictureEvent extends PictureEvent{}
+class SelectPictureEvent extends PictureEvent {
+  String email;
+  SelectPictureEvent(this.email);
+}

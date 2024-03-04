@@ -2,6 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebasebloc/model/user_model.dart';
+import 'package:firebasebloc/services/location.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:meta/meta.dart';
 
 part 'auth_event.dart';
@@ -9,7 +11,7 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  final CurrentLocation currentLocation = CurrentLocation();
   AuthBloc() : super(AuthInitial()) {
     on<CheckLoginStatusEvent>((event, emit) async {
       User? user;
@@ -20,7 +22,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         });
 
         if (user != null) {
-          emit(Authenticated(user));
+          emit(Authenticated(user!));
         } else {
           emit(UnAuthenticated());
         }
@@ -70,6 +72,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         } else {
           emit(UnAuthenticated());
         }
+        Position position = await currentLocation.determinePosition();
+        print(position.latitude);
       } catch (e) {
         emit(AuthenticatedError(message: e.toString()));
       }
@@ -83,31 +87,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthenticatedError(message: e.toString()));
       }
     });
-on<FetchUserDetailsEvent>((event, emit) async {
-  emit(FetchingUserDetails());
-
-  try {
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(event.uid).get();
-    final user = UserModel.fromJson(userDoc.data()!);
-    emit(UserDetailsLoaded(user));
-  } catch (e) {
-    emit(UserDetailsError(e.toString()));
-  }
-});
-
-    // on<FetchUserDetailsEvent>((event, emit) async {
-    //   emit(FetchingUserDetails());
-
-    //   try {
-    //     final userDoc = await FirebaseFirestore.instance
-    //         .collection('users')
-    //         .doc(event.uid)
-    //         .get();
-    //     final user = UserModel.fromJson(userDoc.data()!);
-    //     emit(UserDetailsLoaded(user));
-    //   } catch (e) {
-    //     emit(UserDetailsError(e.toString()));
-    //   }
-    // });
+    on<DeleteAccountEvent>((event, emit) async {
+      User? user = await _auth.currentUser;
+      AuthCredential credential = EmailAuthProvider.credential(
+          email: event.email, password: event.password);
+      try {
+        await user!.reauthenticateWithCredential(credential).then((value) {
+          value.user!.delete();
+          print("deleted ${event.email}");
+          emit(DeleteState());
+        });
+      } catch (e) {
+        emit(DeleteErrorState(msg: e.toString()));
+      }
+    });
   }
 }

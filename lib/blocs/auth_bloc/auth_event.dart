@@ -26,24 +26,11 @@ class SignUpEvent extends AuthEvent {
 
 class LogOutEvent extends AuthEvent {}
 
-class FetchUserDetailsEvent extends AuthEvent {
-  final String uid;
-
-  FetchUserDetailsEvent(this.uid);
+class DeleteAccountEvent extends AuthEvent {
+  final String email;
+  final String password;
+  DeleteAccountEvent({
+    required this.email,
+    required this.password,
+  });
 }
-
-// class FetchUserDetailsEvent extends AuthEvent {
-//   final String uid;
-
-//   FetchUserDetailsEvent(this.uid);
-// }
-
-// class UserDetailsState extends AuthState {}
-
-// class FetchingUserDetails extends UserDetailsState {}
-
-// class UserDetailsError extends UserDetailsState {
-//   final String errorMessage;
-
-//   UserDetailsError(this.errorMessage);
-// }

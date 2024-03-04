@@ -1,6 +1,7 @@
   import 'package:firebase_core/firebase_core.dart';
 import 'package:firebasebloc/firebase_options.dart';
 import 'package:firebasebloc/services/notification.dart';
+import 'package:firebasebloc/view/screens/deleteaccount.dart';
 import 'package:firebasebloc/view/screens/homepage.dart';
 import 'package:firebasebloc/view/screens/loginpage.dart';
 import 'package:firebasebloc/view/screens/registerpage.dart';
@@ -24,10 +25,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/':(context)=>SplashScreenWrapper(),
-        '/login':(context)=>LoginPageWrapper(),
-        '/home':(context)=>HomePageWrapper(),
-        '/register':(context)=>RegisterPageWrapper(),
+        '/':(context)=>const SplashScreenWrapper(),
+        '/login':(context)=>const LoginPageWrapper(),
+        '/home':(context)=>const HomePageWrapper(),
+        '/register':(context)=>const RegisterPageWrapper(),
+        '/delete':(context)=> const DeleteAccountWrapper(),
       },
     );
   }

@@ -4,16 +4,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebasebloc/blocs/auth_bloc/auth_bloc.dart';
 import 'package:firebasebloc/blocs/picture_bloc/picture_bloc.dart';
+import 'package:firebasebloc/services/location.dart';
+import 'package:firebasebloc/view/widgets/custombutton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebasebloc/view/widgets/textbox.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HomePageWrapper extends StatelessWidget {
   const HomePageWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -36,9 +38,35 @@ class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   // final User user;
+  final CurrentLocation currentLocation = CurrentLocation();
 
   final userCollection = FirebaseFirestore.instance.collection("users");
   final currentUser = FirebaseAuth.instance.currentUser!;
+
+  // Future<Position> _determinePosition() async {
+  //   bool serviceEnabled;
+  //   LocationPermission permission;
+
+  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //   if (!serviceEnabled) {
+  //     await Geolocator.openLocationSettings();
+  //     return Future.error('Location services are disabled.');
+  //   }
+
+  //   permission = await Geolocator.checkPermission();
+  //   if (permission == LocationPermission.denied) {
+  //     permission = await Geolocator.requestPermission();
+  //     if (permission == LocationPermission.denied) {
+  //       return Future.error('Location permissions are denied');
+  //     }
+  //   }
+
+  //   if (permission == LocationPermission.deniedForever) {
+  //     return Future.error(
+  //         'Location permissions are permanently denied, we cannot request permissions.');
+  //   }
+  //   return await Geolocator.getCurrentPosition();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -69,29 +97,30 @@ class HomePage extends StatelessWidget {
               }
               return Column(
                 children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
                   Center(
                     child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(100)),
                       child: state is UploadPictureSuccess
                           ? CircleAvatar(
-                              radius: 70,
+                              radius: 55,
                               backgroundImage:
                                   Image.memory(state.userImage).image,
                             )
                           : const CircleAvatar(
-                              radius: 70,
+                              radius: 55,
                               child: Icon(Icons.person),
                             ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
                   ),
                   Center(
                     child: TextButton(
                       child: const Text("select"),
                       onPressed: () {
-                        BlocProvider.of<PictureBloc>(context).add(SelectPictureEvent());
+                        BlocProvider.of<PictureBloc>(context)
+                            .add(SelectPictureEvent(currentUser.email!));
                       },
                     ),
                   )
@@ -99,7 +128,6 @@ class HomePage extends StatelessWidget {
               );
             },
           ),
-
           StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance
                 .collection("users")
@@ -131,8 +159,23 @@ class HomePage extends StatelessWidget {
                           sectionName: "Age",
                           onPressed: () {},
                         ),
-                        const SizedBox(
-                          height: 20,
+                        TextBox(
+                          text: 'text',
+                          sectionName: 'Location',
+                          onPressed: () {},
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 30,
+                          ),
+                          child: CustomButton(
+                            function: () {
+                              Navigator.pushNamed(context, '/delete');
+                            },
+                            text: "Delete Account",
+                            color: Colors.red,
+                          ),
                         ),
                       ],
                     ),
