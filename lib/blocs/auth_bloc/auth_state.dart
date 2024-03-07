@@ -26,6 +26,16 @@ class AuthenticatedError extends AuthState {
   });
 }
 
+class UpdateFieldState extends AuthState {}
+
+class UpdationError extends AuthState {
+  final String msg;
+  UpdationError({
+    required this.msg,
+  });
+  
+}
+
 class DeleteState extends AuthState {}
 
 class DeleteErrorState extends AuthState {

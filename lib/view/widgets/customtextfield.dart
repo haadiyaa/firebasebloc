@@ -4,7 +4,7 @@ class CustomTextField extends StatefulWidget {
   final bool readOnly;
   final TextEditingController controller;
   final TextStyle? hintStyle;
-
+  final bool autoFocus;
   final String hintText;
   final bool obscureText;
   final String? Function(String?)? validator;
@@ -15,6 +15,7 @@ class CustomTextField extends StatefulWidget {
 
   CustomTextField({
     Key? key,
+    this.autoFocus=false,
     this.readOnly = false,
     required this.controller,
     this.hintStyle,
@@ -60,6 +61,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      autofocus: widget.autoFocus,
       readOnly: widget.readOnly,
       validator: widget.validator,
       keyboardType: widget.type,

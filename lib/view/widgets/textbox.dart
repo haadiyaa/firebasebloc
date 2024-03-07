@@ -13,7 +13,7 @@ class TextBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: 15, bottom: 15, top: 15),
+      padding: const EdgeInsets.only(left: 15, bottom: 15,),
       margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
       decoration: const BoxDecoration(
           boxShadow: [
@@ -37,18 +37,18 @@ class TextBox extends StatelessWidget {
                   color: Colors.grey,
                 ),
               ),
-              // IconButton(
-              //   onPressed: onPressed,
-              //   icon: const Icon(
-              //     Icons.edit,
-              //     color: Color.fromARGB(255, 117, 117, 117),
-              //   ),
-              // )
+              IconButton(
+                onPressed: onPressed,
+                icon: const Icon(
+                  Icons.edit,
+                  color: Color.fromARGB(255, 117, 117, 117),
+                ),
+              )
             ],
           ),
-          SizedBox(
-            height: 10,
-          ),
+          // SizedBox(
+          //   height: 10,
+          // ),
           Text(text),
         ],
       ),

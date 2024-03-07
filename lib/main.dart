@@ -2,6 +2,7 @@
 import 'package:firebasebloc/firebase_options.dart';
 import 'package:firebasebloc/services/notification.dart';
 import 'package:firebasebloc/view/screens/deleteaccount.dart';
+import 'package:firebasebloc/view/screens/editscreen.dart';
 import 'package:firebasebloc/view/screens/homepage.dart';
 import 'package:firebasebloc/view/screens/loginpage.dart';
 import 'package:firebasebloc/view/screens/registerpage.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         '/home':(context)=>const HomePageWrapper(),
         '/register':(context)=>const RegisterPageWrapper(),
         '/delete':(context)=> const DeleteAccountWrapper(),
+        // '/edit':(context)=>  EditScreen(),
       },
     );
   }

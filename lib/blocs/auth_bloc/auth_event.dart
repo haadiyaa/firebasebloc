@@ -26,6 +26,11 @@ class SignUpEvent extends AuthEvent {
 
 class LogOutEvent extends AuthEvent {}
 
+class UpdateFieldEvent extends AuthEvent {
+  final UserModel user;
+  UpdateFieldEvent({required this.user});
+}
+
 class DeleteAccountEvent extends AuthEvent {
   final String email;
   final String password;

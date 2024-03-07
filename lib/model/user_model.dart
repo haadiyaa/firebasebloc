@@ -1,5 +1,8 @@
-class UserModel {
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
 
+class UserModel {
+  
   String? email;
   String? password;
   String? uid;
@@ -32,4 +35,19 @@ class UserModel {
       
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'email': email,
+      'password': password,
+      'uid': uid,
+      'name': name,
+      'phone': phone,
+      'age': age,
+      'image': image,
+      'location': location,
+    };
+  }
+
+  
 }

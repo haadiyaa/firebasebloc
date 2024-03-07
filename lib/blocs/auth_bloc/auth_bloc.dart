@@ -11,6 +11,7 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _store = FirebaseFirestore.instance;
   final CurrentLocation currentLocation = CurrentLocation();
   AuthBloc() : super(AuthInitial()) {
     on<CheckLoginStatusEvent>((event, emit) async {
@@ -30,6 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthenticatedError(message: e.toString()));
       }
     });
+
     on<SignUpEvent>((event, emit) async {
       emit(AuthLoading());
       try {
@@ -87,18 +89,54 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthenticatedError(message: e.toString()));
       }
     });
+
     on<DeleteAccountEvent>((event, emit) async {
       User? user = await _auth.currentUser;
       AuthCredential credential = EmailAuthProvider.credential(
           email: event.email, password: event.password);
       try {
         await user!.reauthenticateWithCredential(credential).then((value) {
-          value.user!.delete();
-          print("deleted ${event.email}");
+          value.user!.delete().then((value) async {
+            await _store.runTransaction((transaction) async {
+              QuerySnapshot querySnapshot = await _store
+                  .collection('users')
+                  .where('email', isEqualTo: event.email)
+                  .get();
+              if (querySnapshot.docs.isNotEmpty) {
+                await transaction.delete(querySnapshot.docs.first.reference);
+              } else {
+                print('${event.email} not found in firestore');
+                print('did not delete frome firestore');
+              }
+            });
+          });
+          print("deleted ${event.email} from authentication");
+
           emit(DeleteState());
         });
       } catch (e) {
         emit(DeleteErrorState(msg: e.toString()));
+      }
+    });
+
+    on<UpdateFieldEvent>((event, emit) async {
+      final userCollection = _store.collection('users');
+      final docRef = userCollection.doc(event.user.uid);
+      print('processing');
+      final newUser = UserModel(
+        email: event.user.email,
+        name: event.user.name,
+        uid: event.user.uid,
+        phone: event.user.phone,
+        age: event.user.age,
+        location: event.user.location,
+      ).toJson();
+      try {
+        await docRef.update(newUser);
+        print('updated details');
+        emit(UpdateFieldState());
+      } catch (e) {
+        emit(UpdationError(msg: e.toString()));
       }
     });
   }

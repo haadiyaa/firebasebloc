@@ -4,8 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebasebloc/blocs/auth_bloc/auth_bloc.dart';
 import 'package:firebasebloc/blocs/picture_bloc/picture_bloc.dart';
+import 'package:firebasebloc/model/user_model.dart';
 import 'package:firebasebloc/services/location.dart';
+import 'package:firebasebloc/view/screens/editscreen.dart';
 import 'package:firebasebloc/view/widgets/custombutton.dart';
+import 'package:firebasebloc/view/widgets/customtextfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebasebloc/view/widgets/textbox.dart';
@@ -68,6 +71,13 @@ class HomePage extends StatelessWidget {
   //   return await Geolocator.getCurrentPosition();
   // }
 
+  // void _editTask(BuildContext context, String text, String field) {
+  //   showDialog<void>(
+  //     context: context,
+  //     builder: (context) => EditScreenWrapper(),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     Uint8List? image;
@@ -102,7 +112,8 @@ class HomePage extends StatelessWidget {
                   ),
                   Center(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(100)),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(100)),
                       child: state is UploadPictureSuccess
                           ? CircleAvatar(
                               radius: 55,
@@ -142,13 +153,17 @@ class HomePage extends StatelessWidget {
                     child: ListView(
                       children: [
                         TextBox(
-                            text: userData['name'] ?? '',
-                            sectionName: "User Name",
-                            onPressed: () {}),
+                          text: userData['name'] ?? '',
+                          sectionName: "User Name",
+                          onPressed: () {
+                            // _editTask(context, userData['name'], 'name');
+                          },
+                        ),
                         TextBox(
-                            text: userData['email'] ?? '',
-                            sectionName: "Email",
-                            onPressed: () {}),
+                          text: userData['email'] ?? '',
+                          sectionName: "Email",
+                          onPressed: () {},
+                        ),
                         TextBox(
                           text: userData["phone"] ?? '',
                           sectionName: "Phone number",
@@ -164,10 +179,12 @@ class HomePage extends StatelessWidget {
                           sectionName: 'Location',
                           onPressed: () {},
                         ),
+                        const SizedBox(
+                          height: 25,
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 18,
-                            vertical: 30,
                           ),
                           child: CustomButton(
                             function: () {
@@ -176,6 +193,34 @@ class HomePage extends StatelessWidget {
                             text: "Delete Account",
                             color: Colors.red,
                           ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          child: CustomButton(
+                            function: () {
+                              final user = UserModel(
+                                uid: userData['uid'],
+                                email: userData['email'],
+                                name: userData['name'],
+                                phone: userData['phone'],
+                                age: userData['age'],
+                              );
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        EditScreenWrapper(user: user),
+                                  ));
+                            },
+                            text: 'Edit',
+                            color: Colors.green,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
                         ),
                       ],
                     ),
