@@ -15,7 +15,9 @@ import 'package:firebasebloc/view/widgets/textbox.dart';
 import 'package:geolocator/geolocator.dart';
 
 class HomePageWrapper extends StatelessWidget {
-  const HomePageWrapper({super.key});
+  HomePageWrapper({super.key, this.pos, this.address});
+  Position? pos;
+  String? address;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class HomePageWrapper extends StatelessWidget {
       ],
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          return HomePage();
+          return HomePage(pos: pos,address: address,);
         },
       ),
     );
@@ -38,45 +40,12 @@ class HomePageWrapper extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
-
-  // final User user;
-  final CurrentLocation currentLocation = CurrentLocation();
+  HomePage({super.key, this.pos, this.address});
+  Position? pos;
+  String? address;
 
   final userCollection = FirebaseFirestore.instance.collection("users");
-  final currentUser = FirebaseAuth.instance.currentUser!;
-
-  // Future<Position> _determinePosition() async {
-  //   bool serviceEnabled;
-  //   LocationPermission permission;
-
-  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  //   if (!serviceEnabled) {
-  //     await Geolocator.openLocationSettings();
-  //     return Future.error('Location services are disabled.');
-  //   }
-
-  //   permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission == LocationPermission.denied) {
-  //       return Future.error('Location permissions are denied');
-  //     }
-  //   }
-
-  //   if (permission == LocationPermission.deniedForever) {
-  //     return Future.error(
-  //         'Location permissions are permanently denied, we cannot request permissions.');
-  //   }
-  //   return await Geolocator.getCurrentPosition();
-  // }
-
-  // void _editTask(BuildContext context, String text, String field) {
-  //   showDialog<void>(
-  //     context: context,
-  //     builder: (context) => EditScreenWrapper(),
-  //   );
-  // }
+  final _currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +100,7 @@ class HomePage extends StatelessWidget {
                       child: const Text("select"),
                       onPressed: () {
                         BlocProvider.of<PictureBloc>(context)
-                            .add(SelectPictureEvent(currentUser.email!));
+                            .add(SelectPictureEvent(_currentUser!.email!));
                       },
                     ),
                   )
@@ -142,12 +111,13 @@ class HomePage extends StatelessWidget {
           StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance
                 .collection("users")
-                .doc(currentUser.uid)
+                .doc(_currentUser!.uid)
                 .snapshots(),
             builder: (BuildContext context,
                 AsyncSnapshot<DocumentSnapshot> snapshot) {
               if (snapshot.hasData) {
                 final userData = snapshot.data?.data() as Map<String, dynamic>?;
+                
                 if (userData != null) {
                   return Expanded(
                     child: ListView(
@@ -175,7 +145,7 @@ class HomePage extends StatelessWidget {
                           onPressed: () {},
                         ),
                         TextBox(
-                          text: 'text',
+                          text: userData['location']??address,
                           sectionName: 'Location',
                           onPressed: () {},
                         ),

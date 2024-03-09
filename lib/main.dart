@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/':(context)=>const SplashScreenWrapper(),
         '/login':(context)=>const LoginPageWrapper(),
-        '/home':(context)=>const HomePageWrapper(),
+        '/home':(context)=>HomePageWrapper(),
         '/register':(context)=>const RegisterPageWrapper(),
         '/delete':(context)=> const DeleteAccountWrapper(),
         // '/edit':(context)=>  EditScreen(),

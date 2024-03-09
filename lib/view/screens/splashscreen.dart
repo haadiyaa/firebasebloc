@@ -1,4 +1,5 @@
 import 'package:firebasebloc/blocs/auth_bloc/auth_bloc.dart';
+import 'package:firebasebloc/view/screens/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,6 +25,7 @@ class SplashScreen extends StatelessWidget {
 
         if (state is Authenticated) {
           Navigator.pushReplacementNamed(context, "/home");
+          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomePageWrapper(pos: state.position!, address: state.address!)));
         }
         else if(state is UnAuthenticated){
           Navigator.pushReplacementNamed(context, "/login");

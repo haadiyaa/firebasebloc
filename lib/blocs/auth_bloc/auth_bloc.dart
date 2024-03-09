@@ -12,7 +12,7 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _store = FirebaseFirestore.instance;
-  final CurrentLocation currentLocation = CurrentLocation();
+  final CurretLocation currentLocation = CurretLocation();
   AuthBloc() : super(AuthInitial()) {
     on<CheckLoginStatusEvent>((event, emit) async {
       User? user;
@@ -50,6 +50,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             'phone': event.user.phone,
             'age': event.user.age,
             'createdAt': DateTime.now(),
+            'location':event.user.location?? 'location',
           });
           emit(Authenticated(user));
         } else {
@@ -68,14 +69,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             email: event.email, password: event.password);
 
         final user = userCredential.user;
+        print('process..');
+
+        print('got location..');
+        Position position = await currentLocation.determinePosition();
+        print('latitude: ${position.latitude}');
+        String address = await currentLocation.getAddress(position);
 
         if (user != null) {
-          emit(Authenticated(user));
+          await FirebaseFirestore.instance.collection('users').where('email',isEqualTo: event.email).get().then((value){
+            value.docs.forEach((doc) { doc.reference.update({'location':address});});
+          });
+
+          emit(Authenticated(user, position: position, address: address));
         } else {
           emit(UnAuthenticated());
         }
-        Position position = await currentLocation.determinePosition();
-        print(position.latitude);
       } catch (e) {
         emit(AuthenticatedError(message: e.toString()));
       }

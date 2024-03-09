@@ -1,4 +1,5 @@
 import 'package:firebasebloc/blocs/auth_bloc/auth_bloc.dart';
+import 'package:firebasebloc/view/screens/homepage.dart';
 import 'package:firebasebloc/view/widgets/customtextfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,8 +35,7 @@ class LoginPage extends StatelessWidget {
 
         if (state is Authenticated) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, "/home", (route) => false);
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>HomePageWrapper(pos: state.position,address: state.address,)), (route) => false);
           });
         }
         return Scaffold(
