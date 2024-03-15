@@ -13,14 +13,6 @@ part 'picture_state.dart';
 class PictureBloc extends Bloc<PictureEvent, PictureState> {
   FirebaseStorage storage = FirebaseStorage.instance;
   PictureBloc() : super(PictureInitial()) {
-    on<UploadPictureEvent>((event, emit) async {
-      emit(UploadPictureLoading());
-      try {
-        if (event.image.isNotEmpty) {}
-      } catch (e) {
-        emit(UploadPictureFailure(message: e.toString()));
-      }
-    });
 
     on<SelectPictureEvent>((event, emit) async {
       final imagePicker = ImagePicker();
@@ -49,7 +41,7 @@ class PictureBloc extends Bloc<PictureEvent, PictureState> {
                  });
               });
 
-          emit(UploadPictureSuccess(userImage: bytes));
+          emit(UploadPictureSuccess(userImage: imageUrl));
         } else {
           emit(UploadPictureFailure(message: 'not selected'));
         }

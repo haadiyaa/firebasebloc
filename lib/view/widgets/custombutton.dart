@@ -6,8 +6,12 @@ class CustomButton extends StatelessWidget {
   final VoidCallback function;
   final String text;
   final Color color;
+  final double height;
+  final double? fsize;
   const CustomButton({
     super.key,
+    this.height=52,
+    this.fsize=20,
     required this.function,
     required this.text,
     this.color=Colors.blue,
@@ -18,7 +22,7 @@ class CustomButton extends StatelessWidget {
     return GestureDetector(
       onTap: function,
       child: Container(
-        height: 52,
+        height: height,
         width: double.infinity,
         decoration: BoxDecoration(
           color: color,
@@ -27,8 +31,8 @@ class CustomButton extends StatelessWidget {
         child: Center(
           child: Text(
             text,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.white, fontSize: fsize),
           ),
         ),
       ),

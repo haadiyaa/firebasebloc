@@ -39,3 +39,4 @@ class DeleteAccountEvent extends AuthEvent {
     required this.password,
   });
 }
+

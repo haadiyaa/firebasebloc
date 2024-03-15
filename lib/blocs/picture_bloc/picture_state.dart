@@ -16,7 +16,7 @@ class UploadPictureFailure extends PictureState {
 class UploadPictureLoading extends PictureState {}
 
 class UploadPictureSuccess extends PictureState {
-  final Uint8List userImage;
+  final String userImage;
   
   UploadPictureSuccess({required this.userImage});
 }

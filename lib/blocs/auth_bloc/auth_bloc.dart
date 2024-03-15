@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebasebloc/model/user_model.dart';
 import 'package:firebasebloc/services/location.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meta/meta.dart';
 
 part 'auth_event.dart';
@@ -13,6 +14,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _store = FirebaseFirestore.instance;
   final CurretLocation currentLocation = CurretLocation();
+  GoogleSignIn googleSignIn = GoogleSignIn(scopes: ["email"]);
+
+  late UserCredential userCredential;
   AuthBloc() : super(AuthInitial()) {
     on<CheckLoginStatusEvent>((event, emit) async {
       User? user;
@@ -23,7 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         });
 
         if (user != null) {
-          emit(Authenticated(user!));
+          emit(Authenticated(user: user!));
         } else {
           emit(UnAuthenticated());
         }
@@ -35,7 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignUpEvent>((event, emit) async {
       emit(AuthLoading());
       try {
-        final userCredential = await _auth.createUserWithEmailAndPassword(
+        userCredential = await _auth.createUserWithEmailAndPassword(
           email: event.user.email.toString(),
           password: event.user.password.toString(),
         );
@@ -43,16 +47,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final user = userCredential.user;
 
         if (user != null) {
-          FirebaseFirestore.instance.collection("users").doc(user.uid).set({
+          await FirebaseFirestore.instance
+              .collection("users")
+              .doc(user.uid)
+              .set({
             'uid': user.uid,
             'email': user.email,
             'name': event.user.name,
             'phone': event.user.phone,
             'age': event.user.age,
             'createdAt': DateTime.now(),
-            'location':event.user.location?? 'location',
+            'location': event.user.location ?? 'location',
           });
-          emit(Authenticated(user));
+          emit(Authenticated(user: userCredential.user!));
         } else {
           emit(UnAuthenticated());
         }
@@ -65,7 +72,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoading());
 
       try {
-        final userCredential = await _auth.signInWithEmailAndPassword(
+        userCredential = await _auth.signInWithEmailAndPassword(
             email: event.email, password: event.password);
 
         final user = userCredential.user;
@@ -77,11 +84,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         String address = await currentLocation.getAddress(position);
 
         if (user != null) {
-          await FirebaseFirestore.instance.collection('users').where('email',isEqualTo: event.email).get().then((value){
-            value.docs.forEach((doc) { doc.reference.update({'location':address});});
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('email', isEqualTo: event.email)
+              .get()
+              .then((value) {
+            value.docs.forEach((doc) {
+              doc.reference.update({'location': address});
+            });
           });
 
-          emit(Authenticated(user, position: position, address: address));
+          emit(Authenticated(
+              user: userCredential.user!,
+              position: position,
+              address: address));
         } else {
           emit(UnAuthenticated());
         }
@@ -133,13 +149,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final docRef = userCollection.doc(event.user.uid);
       print('processing');
       final newUser = UserModel(
-        email: event.user.email,
-        name: event.user.name,
-        uid: event.user.uid,
-        phone: event.user.phone,
-        age: event.user.age,
-        location: event.user.location,
-      ).toJson();
+              email: event.user.email,
+              name: event.user.name,
+              uid: event.user.uid,
+              phone: event.user.phone,
+              age: event.user.age,
+              location: event.user.location,
+              image: event.user.image)
+          .toJson();
       try {
         await docRef.update(newUser);
         print('updated details');

@@ -1,6 +1,7 @@
 import 'package:firebasebloc/blocs/auth_bloc/auth_bloc.dart';
 import 'package:firebasebloc/view/screens/homepage.dart';
 import 'package:firebasebloc/view/widgets/customtextfield.dart';
+// import 'package:firebasebloc/view/widgets/googlesignin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -35,7 +36,14 @@ class LoginPage extends StatelessWidget {
 
         if (state is Authenticated) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>HomePageWrapper(pos: state.position,address: state.address,)), (route) => false);
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => HomePageWrapper(
+                          pos: state.position,
+                          address: state.address,
+                        )),
+                (route) => false);
           });
         }
         return Scaffold(
@@ -96,11 +104,13 @@ class LoginPage extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           if (_formKey.currentState!.validate()) {
-                            authBloc.add(LoginEvent(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text.trim()));
+                            authBloc.add(
+                              LoginEvent(
+                                email: _emailController.text.trim(),
+                                password: _passwordController.text.trim(),
+                              ),
+                            );
                           }
-                          
                         },
                         child: Container(
                           height: 52,

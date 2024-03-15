@@ -83,7 +83,7 @@ class RegisterPage extends StatelessWidget {
                               if (value!.isEmpty) {
                                 return 'please enter the password';
                               } else if (!paswd.hasMatch(value)) {
-                                return 'Password should contain at least one upper case, \none lower case, one digit, one special character and \nmust be 8 characters in length';
+                                return 'Password should contain at least one upper case, one lower case, one digit, one special character and must be 8 characters in length';
                               }
                             },
                             obscureText: true,

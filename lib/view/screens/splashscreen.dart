@@ -25,7 +25,7 @@ class SplashScreen extends StatelessWidget {
 
         if (state is Authenticated) {
           Navigator.pushReplacementNamed(context, "/home");
-          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomePageWrapper(pos: state.position!, address: state.address!)));
+          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomePageWrapper(user: state.user ,pos: state.position!, address: state.address!)));
         }
         else if(state is UnAuthenticated){
           Navigator.pushReplacementNamed(context, "/login");
