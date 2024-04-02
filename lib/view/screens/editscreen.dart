@@ -10,7 +10,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class EditScreenWrapper extends StatelessWidget {
   const EditScreenWrapper({super.key, required this.user});
   final UserModel user;
-  // final string
 
   @override
   Widget build(BuildContext context) {
